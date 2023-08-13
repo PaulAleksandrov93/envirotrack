@@ -14,3 +14,7 @@ class RoomAdmin(admin.ModelAdmin):
     def list_responsibles(self, obj):
         return ", ".join([responsible.last_name for responsible in obj.responsible_persons.all()])
     list_responsibles.short_description = 'Ответственные'
+
+# @admin.register(EnviromentalParameters)
+# class EnviromentalParametersAdmin(admin.ModelAdmin):
+

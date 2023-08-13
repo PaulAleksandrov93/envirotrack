@@ -14,9 +14,21 @@ class RoomSerializer(serializers.ModelSerializer):
         model = Room
         fields = '__all__'
 
+class RoomNumberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ['room_number']
 
-class EnviromentalsParametersSerializer(serializers.ModelSerializer):
-    room = RoomSerializer()
+class ResposibleNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Responsible
+        fields = ['first_name', 'last_name']
+
+
+class EnvironmentalParametersSerializer(serializers.ModelSerializer):
+    room = RoomNumberSerializer()
+    responsible = ResposibleNameSerializer()
+
     class Meta:
         model = EnviromentalParameters
-        fields = '__all__'
+        fields = ['id', 'room', 'temperature_celsius', 'humidity_percentage', 'pressure_kpa', 'pressure_mmhg', 'date_time', 'responsible']
