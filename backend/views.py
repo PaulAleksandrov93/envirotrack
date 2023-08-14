@@ -8,6 +8,13 @@ from .models import Responsible, Room, Profession, EnviromentalParameters
 from .serializers import EnvironmentalParametersSerializer
 
 
+def getRoutes(request):
+    routes = [
+        '/backend/token',
+        '/backend/token/refresh'
+    ]
+    return Response(routes, safe=False)
+
 
 
 @api_view(['GET'])
