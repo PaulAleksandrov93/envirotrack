@@ -5,7 +5,7 @@ from rest_framework.serializers import Serializer
 from rest_framework import status
 
 from .models import Responsible, Room, Profession, EnviromentalParameters
-from .serializers import EnvironmentalParametersSerializer
+from .serializers import EnvironmentalParametersSerializer, RoomSelectSerializer
 
 
 def getRoutes(request):
@@ -20,7 +20,7 @@ def getRoutes(request):
 @api_view(['GET'])
 def getEnviromentalParameters(request):
     parameters = EnviromentalParameters.objects.all()
-    serializer = EnvironmentalParametersSerializer(parameters, many=True)
+    serializer = EnvironmentalParametersSerializer(parameters, many=True, context={'request': request})
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -29,6 +29,11 @@ def getEnviromentalParameter(request, pk):
     serializer = EnvironmentalParametersSerializer(parameters, many=False)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def getRooms(request):
+    rooms = Room.objects.all()
+    serializer = RoomSelectSerializer(rooms, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['POST'])
@@ -38,6 +43,7 @@ def createEnvironmentalParameters(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['PUT'])

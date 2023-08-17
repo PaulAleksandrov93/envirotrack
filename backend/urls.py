@@ -7,5 +7,6 @@ urlpatterns = [
     path('parameters/create/', views.createEnvironmentalParameters, name='create-environmental-parameters'),
     path('parameters/update/<str:pk>/', views.updateEnvironmentalParameters, name='update-environmental-parameters'),
     path('parameters/delete/<str:pk>/', views.deleteEnvironmentalParameters, name='delete-environmental-parameters'),
+    path('rooms/', views.getRooms, name='room-list'),  # Добавлен URL для получения списка комнат
     
 ]

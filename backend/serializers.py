@@ -19,13 +19,18 @@ class RoomNumberSerializer(serializers.ModelSerializer):
         model = Room
         fields = ['room_number']
 
+class RoomSelectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ['id', 'room_number']
+
 class ResposibleNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Responsible
         fields = ['first_name', 'last_name']
 
 class EnvironmentalParametersSerializer(serializers.ModelSerializer):
-    room = RoomNumberSerializer()  
+    room = RoomSelectSerializer()
     responsible = ResponsibleSerializer()  
 
     class Meta:
