@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Profession(models.Model):
@@ -9,6 +10,7 @@ class Profession(models.Model):
 
 
 class Responsible(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     patronymic = models.CharField(max_length=50)
