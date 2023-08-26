@@ -46,16 +46,6 @@ def getRoutes(request):
     ]
     return Response(routes)
 
-
-# def getRoutes(request):
-#     routes = [
-#         '/backend/token',
-#         '/backend/token/refresh'
-#     ]
-#     return Response(routes, safe=False)
-
-
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getEnviromentalParameters(request):
@@ -65,6 +55,7 @@ def getEnviromentalParameters(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
+
 def getEnviromentalParameter(request, pk):
     parameters = EnviromentalParameters.objects.get(id=pk)
     serializer = EnvironmentalParametersSerializer(parameters, many=False)
