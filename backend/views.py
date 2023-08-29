@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.serializers import Serializer
 from rest_framework import status
 
-from .models import Responsible, Room, Profession, EnviromentalParameters
-from .serializers import EnvironmentalParametersSerializer, RoomSelectSerializer
+from .models import Responsible, Room, Profession, EnviromentalParameters, User
+from .serializers import EnvironmentalParametersSerializer, RoomSelectSerializer, ResponsibleSerializer
 
 
 def getRoutes(request):
@@ -69,3 +69,18 @@ def deleteEnvironmentalParameters(request, pk):
 
     environmental_params.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+def get_current_user(request):
+    user = request.user
+    if user.is_authenticated:
+        try:
+            responsible = Responsible.objects.get(user=user)
+            serializer = ResponsibleSerializer(responsible)
+            return Response(serializer.data)
+        except Responsible.DoesNotExist:
+            return Response({'error': 'Responsible not found'}, status=404)
+    else:
+        return Response({'error': 'User not authenticated'}, status=401)
