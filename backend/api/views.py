@@ -70,21 +70,53 @@ def getRooms(request):
 #     if serializer.is_valid():
 #         serializer.save()
 #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     print(serializer.errors)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def createEnvironmentalParameters(request):
+#     serializer = EnvironmentalParametersSerializer(data=request.data)
+#     if serializer.is_valid():
+#         # Добавляем валидное поле "responsible"
+#         serializer.validated_data['responsible'] = request.user.responsible.id
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
 #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def createEnvironmentalParameters(request):
     serializer = EnvironmentalParametersSerializer(data=request.data)
+
     if serializer.is_valid():
-        # Добавляем валидное поле "responsible"
-        serializer.validated_data['responsible'] = request.user.responsible.id
-        serializer.save()
+        room_data = request.data.get('room')
+        responsible_data = request.data.get('responsible')
+
+        room = None
+        if room_data:
+            room, created = Room.objects.get_or_create(room_number=room_data.get('room_number'))
+
+        responsible = None
+        if responsible_data:
+            responsible, created = Responsible.objects.get_or_create(
+                first_name=responsible_data.get('first_name'),
+                last_name=responsible_data.get('last_name'),
+                patronymic=responsible_data.get('patronymic')
+            )
+
+        instance = EnviromentalParameters.objects.create(
+            room=room,
+            responsible=responsible,
+            temperature_celsius=serializer.validated_data['temperature_celsius'],
+            humidity_percentage=serializer.validated_data['humidity_percentage'],
+            pressure_kpa=serializer.validated_data['pressure_kpa'],
+            pressure_mmhg=serializer.validated_data['pressure_mmhg'],
+            date_time=serializer.validated_data['date_time']
+        )
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
-
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
