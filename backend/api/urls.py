@@ -21,4 +21,7 @@ urlpatterns = [
 
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # Добавляем новый урл для отображения всех средств измерений
+    path('measurement_instruments/', views.getMeasurementInstruments, name='measurement-instruments-list'),
 ]

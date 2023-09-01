@@ -27,7 +27,18 @@ class Room(models.Model):
 
     def __str__(self):
         return f'Помещение № {self.room_number}'
-      
+
+
+class MeasurementInstrument(models.Model):
+    name = models.CharField(max_length=255)
+    type = models.CharField(max_length=255)
+    serial_number = models.CharField(max_length=50)
+    calibration_date = models.DateField()
+    calibration_interval = models.PositiveIntegerField()  # Интервал в месяцах, например
+
+    def __str__(self):
+        return self.name
+    
 
 class EnviromentalParameters(models.Model):
     temperature_celsius = models.DecimalField(max_digits=5, decimal_places=2)
@@ -37,6 +48,8 @@ class EnviromentalParameters(models.Model):
     date_time = models.DateTimeField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     responsible = models.ForeignKey(Responsible, related_name='environmental_parameters', on_delete=models.SET_NULL, null=True)
+    measurement_instrument = models.ForeignKey(MeasurementInstrument, on_delete=models.CASCADE, null=True)  # Добавляем поле CB
 
     def __str__(self):
         return f'{self.room.room_number} - {self.date_time}'
+
