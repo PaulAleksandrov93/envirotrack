@@ -48,7 +48,12 @@ class EnviromentalParameters(models.Model):
     date_time = models.DateTimeField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     responsible = models.ForeignKey(Responsible, related_name='environmental_parameters', on_delete=models.SET_NULL, null=True)
-    measurement_instrument = models.ForeignKey(MeasurementInstrument, on_delete=models.CASCADE, null=True)  # Добавляем поле CB
+    measurement_instrument = models.ForeignKey(MeasurementInstrument, on_delete=models.CASCADE, null=True) 
+
+    created_at = models.DateTimeField(auto_now_add=True, null=True)  # Дата и время создания
+    created_by = models.ForeignKey(User, related_name='created_parameters', on_delete=models.SET_NULL, null=True)  # Кто создал
+    modified_at = models.DateTimeField(auto_now=True, null=True)  # Дата и время последнего изменения
+    modified_by = models.ForeignKey(User, related_name='modified_parameters', on_delete=models.SET_NULL, null=True)  # Кто изменил
 
     def __str__(self):
         return f'{self.room.room_number} - {self.date_time}'
