@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -70,54 +71,10 @@ def getMeasurementInstruments(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def createEnvironmentalParameters(request):
-#     serializer = EnvironmentalParametersSerializer(data=request.data)
-
-#     if serializer.is_valid():
-#         room_data = request.data.get('room')
-#         responsible_data = request.data.get('responsible')
-
-#         room = None
-#         if room_data:
-#             room, created = Room.objects.get_or_create(room_number=room_data.get('room_number'))
-
-#         responsible = None
-#         if responsible_data:
-#             responsible, created = Responsible.objects.get_or_create(
-#                 first_name=responsible_data.get('first_name'),
-#                 last_name=responsible_data.get('last_name'),
-#                 patronymic=responsible_data.get('patronymic')
-#             )
-
-#         # Создание экземпляра EnvironmentalParameters с помощью сериализатора
-#         environmental_params = serializer.save(room=room, responsible=responsible)
-
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-#     print(serializer.errors)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['PUT'])
-# @permission_classes([IsAuthenticated])
-# def updateEnvironmentalParameters(request, pk):
-#     try:
-#         environmental_params = EnviromentalParameters.objects.get(pk=pk)
-#     except EnviromentalParameters.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     serializer = EnvironmentalParametersSerializer(instance=environmental_params, data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data)
-#     print(serializer.errors)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def createEnvironmentalParameters(request):
-    # Передайте контекст с request в сериализатор
+    
     serializer = EnvironmentalParametersSerializer(data=request.data, context={'request': request})
 
     if serializer.is_valid():
@@ -136,39 +93,19 @@ def createEnvironmentalParameters(request):
                 patronymic=responsible_data.get('patronymic')
             )
 
-        # Добавьте информацию о пользователе, создавшем запись
+        
         if request.user.is_authenticated:
             serializer.save(room=room, responsible=responsible, created_by=request.user)
         else:
             serializer.save(room=room, responsible=responsible)
 
+        print("Data received on the server:", request.data)
+        print("Created by:", serializer.instance.created_by)
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     # Если сериализатор не прошел валидацию, возвращаем ошибку 400 с информацией об ошибках
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['PUT'])
-# @permission_classes([IsAuthenticated])
-# def updateEnvironmentalParameters(request, pk):
-#     try:
-#         environmental_params = EnviromentalParameters.objects.get(pk=pk)
-#     except EnviromentalParameters.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     # Передайте контекст с request в сериализатор
-#     serializer = EnvironmentalParametersSerializer(instance=environmental_params, data=request.data, context={'request': request})
-    
-#     if serializer.is_valid():
-#         # Добавьте информацию о пользователе, изменившем запись
-#         if request.user.is_authenticated:
-#             serializer.save(modified_by=request.user)
-#         else:
-#             serializer.save()
-#         return Response(serializer.data)
-    
-#     # Если сериализатор не прошел валидацию, возвращаем ошибку 400 с информацией об ошибках
-#     print(serializer.errors)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['PUT'])
@@ -179,7 +116,6 @@ def updateEnvironmentalParameters(request, pk):
     except EnviromentalParameters.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    # Передайте контекст с request в сериализатор
     serializer = EnvironmentalParametersSerializer(instance=environmental_params, data=request.data, context={'request': request})
     
     if serializer.is_valid():
@@ -249,3 +185,29 @@ def get_current_user(request):
             return Response({'error': 'Responsible not found'}, status=404)
     else:
         return Response({'error': 'User not authenticated'}, status=401)
+
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+def filterEnvironmentalParameters(request):
+    
+    responsible_id = request.query_params.get('responsible')
+    room_id = request.query_params.get('room')
+    date = request.query_params.get('date')
+
+    
+    filters = Q()
+
+    if responsible_id:
+        filters &= Q(responsible=responsible_id)
+    if room_id:
+        filters &= Q(room=room_id)
+    if date:
+        filters &= Q(date_time=date)
+
+   
+    parameters = EnviromentalParameters.objects.filter(filters)
+
+    
+    serializer = EnvironmentalParametersSerializer(parameters, many=True)
+    return Response(serializer.data)
