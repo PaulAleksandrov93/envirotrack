@@ -9,16 +9,12 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
-
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-from datetime import timedelta
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -69,9 +65,6 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
-
-
-
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=90),
@@ -136,17 +129,27 @@ WSGI_APPLICATION = 'envirotrack.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'envirodb',
+#         'USER': 'enviroadmin',
+#         'PASSWORD': 'Track13p73_!',
+#         'HOST': 'localhost',  # Если PostgreSQL запущен на локальном хосте
+#         'PORT': '5432',       # Порт, на котором слушает PostgreSQL (по умолчанию 5432)
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'envirodb',
-        'USER': 'enviroadmin',
-        'PASSWORD': 'Track13p73_!',
-        'HOST': 'localhost',  # Если PostgreSQL запущен на локальном хосте
-        'PORT': '5432',       # Порт, на котором слушает PostgreSQL (по умолчанию 5432)
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
+        'HOST': os.environ.get('DB_HOST'),  
+        'PORT': '5432',       
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

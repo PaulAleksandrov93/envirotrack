@@ -3,41 +3,57 @@ from django.contrib.auth.models import User
 
 
 class Profession(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, verbose_name='Название')
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = 'Профессия'
+        verbose_name_plural = 'Профессии'
 
 
 class Responsible(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    patronymic = models.CharField(max_length=50)
-    profession = models.ForeignKey(Profession, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name='Пользователь')
+    first_name = models.CharField(max_length=50, verbose_name='Имя')
+    last_name = models.CharField(max_length=50, verbose_name='Фамилия')
+    patronymic = models.CharField(max_length=50, verbose_name='Отчество')
+    profession = models.ForeignKey(Profession, on_delete=models.SET_NULL, null=True, verbose_name='Профессия')
     # rooms_responsible_for = models.ManyToManyField(Room, related_name="responsibles")
 
-    def __str__(self):
+    def __str__(self):        
         return f'{self.last_name} {self.first_name} {self.patronymic}'
-
-
+    
+    class Meta:
+        verbose_name = 'Ответственный'
+        verbose_name_plural = 'Ответственные'
+    
+    
 class Room(models.Model):
-    room_number = models.CharField(max_length=10)
-    responsible_persons = models.ManyToManyField(Responsible, related_name="rooms")
+    room_number = models.CharField(max_length=10, verbose_name='Номер помещения')
+    responsible_persons = models.ManyToManyField(Responsible, related_name="rooms", verbose_name='Ответственный')
 
     def __str__(self):
         return f'Помещение № {self.room_number}'
+    
+    class Meta:
+        verbose_name = 'Помещение'
+        verbose_name_plural = 'Помещения'
 
 
 class MeasurementInstrument(models.Model):
-    name = models.CharField(max_length=255)
-    type = models.CharField(max_length=255)
-    serial_number = models.CharField(max_length=50)
-    calibration_date = models.DateField()
-    calibration_interval = models.PositiveIntegerField()  # Интервал в месяцах, например
+    name = models.CharField(max_length=255, verbose_name='Название')
+    type = models.CharField(max_length=255, verbose_name='Тип')
+    serial_number = models.CharField(max_length=50, verbose_name='Заводской номер')
+    calibration_date = models.DateField(verbose_name='Дата поверки')
+    calibration_interval = models.PositiveIntegerField(verbose_name='Межповерочный интервал')  # Интервал в месяцах, например
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = 'Средство измерения'
+        verbose_name_plural = 'Средства измерения'
     
 
 class EnviromentalParameters(models.Model):
@@ -57,4 +73,8 @@ class EnviromentalParameters(models.Model):
 
     def __str__(self):
         return f'{self.room.room_number} - {self.date_time}'
+    
+    class Meta:
+        verbose_name = 'Параметры окружающей среды'
+        verbose_name_plural = 'Параметры окружающей среды'
 

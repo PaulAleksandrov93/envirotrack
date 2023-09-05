@@ -10,8 +10,8 @@ admin.site.register(Profession)
 @admin.register(MeasurementInstrument)
 class MeasurementInstrumentAdmin(admin.ModelAdmin):
     list_display = ('name', 'type', 'serial_number', 'calibration_date', 'calibration_interval')
-
     
+   
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     list_display = ('room_number', 'list_responsibles')
@@ -20,6 +20,5 @@ class RoomAdmin(admin.ModelAdmin):
         return ", ".join([responsible.last_name for responsible in obj.responsible_persons.all()])
     list_responsibles.short_description = 'Ответственные'
 
-# @admin.register(EnviromentalParameters)
-# class EnviromentalParametersAdmin(admin.ModelAdmin):
+
 
